@@ -15,6 +15,7 @@ import javax.swing.JTextField;
 public class Vista extends javax.swing.JFrame {
 
     public JTextField txtValores[];
+    public JLabel matrizLabel[][];
     public int valores[];
     public double matriz[][];
     public final double infinito = Double.POSITIVE_INFINITY;
@@ -110,7 +111,7 @@ public class Vista extends javax.swing.JFrame {
                     .addComponent(jButton1))
                 .addGap(18, 18, 18)
                 .addComponent(btnCambio)
-                .addContainerGap(283, Short.MAX_VALUE))
+                .addContainerGap(442, Short.MAX_VALUE))
         );
 
         pack();
@@ -123,7 +124,7 @@ public class Vista extends javax.swing.JFrame {
         for (int i = 0; i < valores.length; i++) {
             JTextField txtval = new JTextField();
             this.add(txtval);
-            txtval.setBounds(60+50 * i, 100, 30, 30);
+            txtval.setBounds(60 + 50 * i, 100, 30, 30);
             txtValores[i] = txtval;
 
         }
@@ -138,7 +139,6 @@ public class Vista extends javax.swing.JFrame {
     private void btnCambioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCambioActionPerformed
         for (int i = 0; i < valores.length; i++) {
             valores[i] = Integer.parseInt(txtValores[i].getText());
-            System.out.println(valores[i]);
 
         }
 
@@ -146,9 +146,7 @@ public class Vista extends javax.swing.JFrame {
         int vueltas = Integer.parseInt(txtVueltas.getText());
 
         matriz = new double[monedas + 1][vueltas + 1];
-
-        System.out.println(monedas);
-        System.out.println(vueltas);
+        matrizLabel = new JLabel[monedas + 1][vueltas + 1];
 
         for (int j = 0; j < (vueltas + 1); j++) {
             matriz[0][j] = infinito;
@@ -162,7 +160,7 @@ public class Vista extends javax.swing.JFrame {
 
                 if (i == 1 && j < valores[i - 1]) {
                     matriz[i][j] = infinito;
-                    System.out.println(valores[i - 1]);
+
                 } else if (i == 1) {
                     matriz[i][j] = (1 + (matriz[1][j - valores[0]]));
                 } else if (j < valores[i - 1]) {
@@ -175,20 +173,99 @@ public class Vista extends javax.swing.JFrame {
 
         }
 
-        for (int i = 0; i < monedas + 1; i++) {
-            for (int j = 0; j < vueltas + 1; j++) {
-                
-                JLabel etiqueta=new JLabel();
-                add(etiqueta);
-                etiqueta.setText(""+matriz[i][j]);
-                etiqueta.setBounds(30+j*70,200+ i*25, 60, 60);
-                
-                
-                System.out.print(matriz[i][j] + " ");
-            }
-            System.out.println("");
+        for (int i = 0; i < monedas; i++) {
+            JLabel etiqueta = new JLabel();
+            add(etiqueta);
+            etiqueta.setText("$" + valores[i]);
+            etiqueta.setBounds(20, 275 + i * 75, 100, 100);
         }
 
+        for (int j = 0; j <= vueltas; j++) {
+            JLabel etiqueta = new JLabel();
+            add(etiqueta);
+            etiqueta.setText("#" + j);
+            etiqueta.setBounds(110 + j * 70, 175, 100, 100);
+        }
+
+        for (int i = 0; i < monedas + 1; i++) {
+            for (int j = 0; j < vueltas + 1; j++) {
+
+                JLabel etiqueta = new JLabel();
+                add(etiqueta);
+                etiqueta.setText("" + matriz[i][j]);
+                etiqueta.setBounds(100 + j * 70, 200 + i * 75, 100, 100);
+
+            }
+
+        }
+        for (int i = 0; i < monedas + 1; i++) {
+            JLabel etiqueta = new JLabel();
+            etiqueta.setText("Infinity");
+            matrizLabel[0][i] = etiqueta;
+        }
+
+        for (int i = 1; i < monedas + 1; i++) {
+            for (int j = 1; j < vueltas + 1; j++) {
+
+                if (i == 1) {
+                    if (j % valores[i - 1] == 0) {
+                        JLabel etiqueta = new JLabel();
+                        add(etiqueta);
+                        int div = j / valores[i - 1];
+                        etiqueta.setText(div + ":" + valores[i - 1]);
+                        matrizLabel[i][j] = etiqueta;
+                        etiqueta.setBounds(100 + j * 70, 220 + i * 75, 100, 100);
+                    } else {
+                        JLabel etiqueta = new JLabel();
+                        add(etiqueta);
+                        etiqueta.setText("Infinity");
+                        matrizLabel[i][j] = etiqueta;
+                        etiqueta.setBounds(100 + j * 70, 220 + i * 75, 100, 100);
+                    }
+                } else if (j % valores[i - 1] == 0) {
+                    JLabel etiqueta = new JLabel();
+                    add(etiqueta);
+                    int div = j / valores[i - 1];
+                    etiqueta.setText(div + ":" + valores[i - 1]);
+                    matrizLabel[i][j] = etiqueta;
+                    etiqueta.setBounds(100 + j * 70, 220 + i * 75, 100, 100);
+
+                } else if (j < valores[i - 1]) {
+                    JLabel etiqueta = new JLabel();
+                    add(etiqueta);
+                    etiqueta.setText(matrizLabel[i - 1][j].getText());
+                    matrizLabel[i][j] = etiqueta;
+                    etiqueta.setBounds(100 + j * 70, 220 + i * 75, 100, 100);
+                } else if (matrizLabel[i - 1][j].getText().equalsIgnoreCase("Infinity") || j > valores[i - 1]) {
+
+                    int a = j;
+                    JLabel etiqueta = new JLabel();
+                    int div = a / valores[i - 1];
+                    int resto = a % valores[i - 1];
+
+                    if ((matrizLabel[i - 1][resto].getText().equalsIgnoreCase("Infinity") && (matrizLabel[i - 1][j].getText().equalsIgnoreCase("Infinity")))) {
+                        int res = j - valores[i - 1];
+                        add(etiqueta);
+                        etiqueta.setText(matrizLabel[i][res].getText() + "1:" + valores[i - 1]);
+                        matrizLabel[i][j] = etiqueta;
+                        etiqueta.setBounds(100 + j * 70, 220 + i * 75, 100, 100);
+                    } else if (matrizLabel[i - 1][resto].getText().equalsIgnoreCase("Infinity")) {
+                        add(etiqueta);
+                        etiqueta.setText(matrizLabel[i - 1][j].getText());
+                        matrizLabel[i][j] = etiqueta;
+                        etiqueta.setBounds(100 + j * 70, 220 + i * 75, 100, 100);
+                    } else {
+                        add(etiqueta);
+                        etiqueta.setText(div + ":" + valores[i - 1] + "+" + matrizLabel[i - 1][resto].getText());
+                        matrizLabel[i][j] = etiqueta;
+                        etiqueta.setBounds(100 + j * 70, 220 + i * 75, 100, 100);
+                    }
+
+                }
+
+            }
+
+        }
 
     }//GEN-LAST:event_btnCambioActionPerformed
 
